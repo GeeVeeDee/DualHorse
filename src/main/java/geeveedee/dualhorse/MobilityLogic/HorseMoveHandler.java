@@ -1,5 +1,6 @@
-package geeveedee.dualhorse;
+package geeveedee.dualhorse.MobilityLogic;
 
+import geeveedee.dualhorse.DualHorse;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;

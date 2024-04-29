@@ -3,7 +3,17 @@ package geeveedee.dualhorse;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+import geeveedee.dualhorse.HorseDismount.HorseDeathHandler;
+import geeveedee.dualhorse.HorseDismount.HorseDismountHandler;
+import geeveedee.dualhorse.HorseDismount.HorseInventoryUpdateHandler;
+import geeveedee.dualhorse.HorseDismount.PlayerLeaveHandler;
+import geeveedee.dualhorse.HorseMount.HorseMountHandler;
+import geeveedee.dualhorse.HorseMount.HorseRightClickHandler;
+import geeveedee.dualhorse.MobilityLogic.HorseDamageHandler;
+import geeveedee.dualhorse.MobilityLogic.HorseMoveHandler;
+import geeveedee.dualhorse.MobilityLogic.PlayerDamageHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
@@ -20,9 +30,16 @@ public final class DualHorse extends JavaPlugin {
         saveDefaultConfig();
 
         Bukkit.getPluginManager().registerEvents(new HorseMountHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new HorseRightClickHandler(this), this);
+
+        Bukkit.getPluginManager().registerEvents(new HorseDeathHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new HorseDismountHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new HorseInventoryUpdateHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerLeaveHandler(this), this);
+
         Bukkit.getPluginManager().registerEvents(new HorseMoveHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(new DeathHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(new TwoPlayerHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new PlayerDamageHandler(this), this);
+        Bukkit.getPluginManager().registerEvents(new HorseDamageHandler(this), this);
 
         getLogger().info("DualHorse Plugin - made by GeeVeeDee");
     }
@@ -41,6 +58,8 @@ public final class DualHorse extends JavaPlugin {
     public HashMap<Horse, ArmorStand> hm = new HashMap<Horse, ArmorStand>();
     public Set<Horse> kh = new HashSet<Horse>();
     //public Set<Horse> dm = new HashSet<Horse>();
+
+    public HashMap<UUID, UUID> horseArmorStandLink = new HashMap<UUID, UUID>();
 
     //Constants
     public double HorseHeight = 0.45;
@@ -67,6 +86,7 @@ public final class DualHorse extends JavaPlugin {
 		return null;
 	}*/
 
+    // TODO: check null return
     //Returns horse AS linked to horse if horse is known
     public ArmorStand knownHorse(Horse h) {
         for (Horse kh : hm.keySet()) {
@@ -108,7 +128,7 @@ public final class DualHorse extends JavaPlugin {
         return (double) Amplifier * -Math.sin(inRadians(pitch));
     }
 
-    public void Log(String string) {
+    public void DevLog(String string) {
         //this.getLogger().info(string);
     }
 }
