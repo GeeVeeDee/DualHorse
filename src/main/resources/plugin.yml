@@ -1,0 +1,4 @@
+name: DualHorse
+version: '${project.version}'
+main: geeveedee.dualhorse.DualHorse
+api-version: '1.20'
