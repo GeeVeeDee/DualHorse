@@ -1,0 +1,2 @@
+## Block two player riding when horse armor is equiped (Default: false)
+block-when-horse-has-armor: false
