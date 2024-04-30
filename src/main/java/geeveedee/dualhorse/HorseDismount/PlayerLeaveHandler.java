@@ -1,6 +1,7 @@
 package geeveedee.dualhorse.HorseDismount;
 
 import geeveedee.dualhorse.DualHorse;
+import geeveedee.dualhorse.Enums.UUIDEnumerator;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Horse;
 import org.bukkit.event.EventHandler;
@@ -16,28 +17,34 @@ public class PlayerLeaveHandler implements Listener {
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
-
-        if (!(e.getPlayer().getVehicle() instanceof Horse)) {
-            return;
+        if (e.getPlayer().getVehicle() instanceof Horse) {
+            playerLeavesOnHorse(e);
+        } else if (e.getPlayer().getVehicle() instanceof ArmorStand) {
+            playerLeavesOnArmorStand(e);
         }
+    }
 
+    private void playerLeavesOnHorse(PlayerQuitEvent e) {
         Horse horse = (Horse) e.getPlayer().getVehicle();
 
         if(!horse.isTamed()) {
             return;
         }
 
-        ArmorStand armorStand = main.knownHorse(horse);
-
-        if (armorStand == null) {
+        if (!main.IsKnownHorse(horse.getUniqueId())) {
             return;
         }
 
-        ArmorStand stand = main.knownHorse(horse);
-        assert stand != null;
-        stand.remove();
-        // TODO: rewrite to only use one list
-        main.kh.remove(horse);
-        main.hm.remove(horse);
+        main.RemoveKnownHorse(horse.getLocation(), horse.getUniqueId(), UUIDEnumerator.HORSE);
+    }
+
+    private void playerLeavesOnArmorStand(PlayerQuitEvent e) {
+        ArmorStand armorStand = (ArmorStand) e.getPlayer().getVehicle();
+
+        if (!main.IsKnownArmorstand(armorStand.getUniqueId())) {
+            return;
+        }
+
+        main.RemoveKnownHorse(armorStand.getLocation(), armorStand.getUniqueId(), UUIDEnumerator.ARMORSTAND);
     }
 }

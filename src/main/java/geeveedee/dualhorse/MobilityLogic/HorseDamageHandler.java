@@ -19,7 +19,6 @@ public class HorseDamageHandler implements Listener {
 
     @EventHandler
     public void onHorseDamage(EntityDamageByEntityEvent e) {
-
         if (!(e.getEntity() instanceof Horse)) {
             return;
         }
@@ -29,7 +28,7 @@ public class HorseDamageHandler implements Listener {
         }
 
         Horse horse = (Horse) e.getEntity();
-        ArmorStand armorStand = main.knownHorse(horse);
+        ArmorStand armorStand = main.GetArmorstand(horse.getLocation(), main.GetKnownArmorstandFromHorseUUID(horse.getUniqueId()));
 
         if(armorStand == null) {
             return;

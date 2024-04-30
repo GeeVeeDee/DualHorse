@@ -2,7 +2,9 @@ package geeveedee.dualhorse.HorseMount;
 
 import geeveedee.dualhorse.DualHorse;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -17,7 +19,6 @@ public class HorseRightClickHandler implements Listener {
 
     @EventHandler
     public void onHorseRightClick(PlayerInteractEntityEvent e) {
-
         if(!(e.getRightClicked() instanceof Horse)) {
             return;
         }
@@ -28,19 +29,33 @@ public class HorseRightClickHandler implements Listener {
 
         Horse horse = (Horse) e.getRightClicked();
 
+        if (horse.getPassengers().isEmpty()) {
+            return;
+        }
+
+        if (main.IsKnownHorse(horse.getUniqueId())) {
+            return;
+        }
+
         if(horse.getInventory().getArmor() != null && main.getConfig().getBoolean("block-when-horse-has-armor")) {
             return;
         }
 
-        ArmorStand as = main.knownHorse(horse);
+        Player player = (Player) e.getPlayer();
+        ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(
+                horse.getLocation().add(
+                        main.getOffSetX(horse),
+                        main.HorseHeight,
+                        main.getOffSetZ(horse)
+                ),
+                EntityType.ARMOR_STAND
+        );
+        armorStand.setGravity(false);
+        armorStand.setSmall(true);
+        // TODO: put to false after development
+        armorStand.setVisible(true);
+        armorStand.addPassenger(player);
 
-        // TODO: rewrite to only use one list
-        // TODO: rewrite to user proper return statement
-        if(main.knownHorse(horse) != null && main.kh.contains(horse)) {
-
-            if (as.getPassengers().size() == 0) {
-                as.addPassenger(e.getPlayer());
-            }
-        }
+        main.AddKnownHorse(horse.getUniqueId(), armorStand.getUniqueId());
     }
 }

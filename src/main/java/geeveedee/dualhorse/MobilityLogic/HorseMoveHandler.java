@@ -23,36 +23,42 @@ public class HorseMoveHandler implements Listener {
 
     @EventHandler
     public void PlayerMoveEvent(PlayerMoveEvent e) {
-
-        if (e.getPlayer().isInsideVehicle()) {
-            if (e.getPlayer().getVehicle() instanceof Horse) {
-                Horse h = (Horse) e.getPlayer().getVehicle();
-                if (main.knownHorse(h) != null) {
-                    ArmorStand stand = main.knownHorse(h);
-
-                    stand.teleport(h.getLocation().add(main.getOffSetX(h), main.HorseHeight, main.getOffSetZ(h)));
-
-                    Method[] methods = ((Supplier<Method[]>) () -> {
-                        try {
-                            Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
-                            return new Method[] {
-                                    //pre-1.18: "setPositionRotation"
-                                    //post-1.18: "b"
-                                    getHandle, getHandle.getReturnType().getDeclaredMethod("b", double.class, double.class, double.class, float.class, float.class)
-                            };
-                        } catch (Exception ex1) {
-                            return null;
-                        }
-                    }).get();
-
-                    Location loc = h.getLocation().add(main.getOffSetX(h), main.HorseHeight, main.getOffSetZ(h));
-
-                    try {
-                        methods[1].invoke(methods[0].invoke(stand), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
-                    } catch (Exception ex2) {
-                    }
-                }
-            }
+        if (!e.getPlayer().isInsideVehicle()) {
+            return;
         }
+
+        if (!(e.getPlayer().getVehicle() instanceof Horse)) {
+            return;
+        }
+
+        Horse horse = (Horse) e.getPlayer().getVehicle();
+
+        if (!main.IsKnownHorse(horse.getUniqueId())) {
+            return;
+        }
+
+        ArmorStand armorStand = main.GetArmorstand(horse.getLocation(), main.GetKnownArmorstandFromHorseUUID(horse.getUniqueId()));
+        armorStand.teleport(horse.getLocation().add(main.getOffSetX(horse), main.HorseHeight, main.getOffSetZ(horse)));
+
+        Method[] methods = ((Supplier<Method[]>) () -> {
+            try {
+                Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
+                return new Method[] {
+                        //pre-1.18: "setPositionRotation"
+                        //post-1.18: "b"
+                        getHandle, getHandle.getReturnType().getDeclaredMethod("b", double.class, double.class, double.class, float.class, float.class)
+                };
+            } catch (Exception ex1) {
+                return null;
+            }
+        }).get();
+
+        Location loc = horse.getLocation().add(main.getOffSetX(horse), main.HorseHeight, main.getOffSetZ(horse));
+
+        try {
+            methods[1].invoke(methods[0].invoke(armorStand), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+        } catch (Exception ex2) {
+        }
+
     }
 }

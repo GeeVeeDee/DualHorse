@@ -19,20 +19,16 @@ public class PlayerDamageHandler implements Listener {
 
     @EventHandler
     public void onPlayerDamage(EntityDamageByEntityEvent e) {
-
-        if (!(e.getEntity() instanceof Player)) {
+        if (!(e.getEntity() instanceof Player) || !e.getEntity().isInsideVehicle()) {
             return;
         }
 
-        if (!(e.getDamager() instanceof Player)) {
+        if (!(e.getDamager() instanceof Player) || !e.getDamager().isInsideVehicle()) {
             return;
         }
 
         Player horsePlayer;
         Player armorPlayer;
-
-        // TODO: rewrite to only use one list
-        // TODO: actually completely rewrite this to be simpler, but using the new list
 
         // Get player on horse
         if (e.getEntity().getVehicle() instanceof Horse) {
@@ -52,21 +48,16 @@ public class PlayerDamageHandler implements Listener {
             return;
         }
 
-        //Cast entities
-        Horse h = (Horse) horsePlayer.getVehicle();
-        ArmorStand as = main.knownHorse(h);
+        Horse horse = (Horse) horsePlayer.getVehicle();
 
-        Boolean flag = false;
-
-        //Check if uuid of passenger matches
-        for(Entity ent : as.getPassengers()) {
-            if(ent instanceof Player) {
-                Player p = (Player) ent;
-                if(p.getUniqueId() == armorPlayer.getUniqueId()) { flag = true; }
-            }
+        if (!main.IsKnownHorse(horse.getUniqueId())) {
+            return;
         }
 
-        //cancel event accordingly
-        e.setCancelled(flag);
+        if (main.GetKnownArmorstandFromHorseUUID(horse.getUniqueId()) != armorPlayer.getVehicle().getUniqueId()) {
+            return;
+        }
+
+        e.setCancelled(true);
     }
 }
