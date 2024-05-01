@@ -18,22 +18,17 @@ public class PlayerSneakHandler implements Listener {
 
     @EventHandler
     public void onPlayerToggleSneak(PlayerToggleSneakEvent e) {
-
-        main.getLogger().info("Someone sneaked");
         if (!e.getPlayer().isInsideVehicle()) {
-            main.getLogger().info("Return 1");
             return;
         }
 
         if (!(e.getPlayer().getVehicle() instanceof ArmorStand)) {
-            main.getLogger().info("Return 2");
             return;
         }
 
         ArmorStand armorStand = (ArmorStand) e.getPlayer().getVehicle();
 
         if (!main.IsKnownArmorstand(armorStand.getUniqueId())) {
-            main.getLogger().info("Return 3");
             return;
         }
 

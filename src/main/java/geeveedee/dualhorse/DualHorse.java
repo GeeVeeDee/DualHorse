@@ -18,6 +18,7 @@ import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DualHorse extends JavaPlugin {
@@ -34,7 +35,6 @@ public final class DualHorse extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerSneakHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new HorseInventoryUpdateHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerLeaveHandler(this), this);
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinHandler(this), this);
 
         Bukkit.getPluginManager().registerEvents(new HorseMoveHandler(this), this);
         Bukkit.getPluginManager().registerEvents(new PlayerDamageHandler(this), this);
@@ -45,21 +45,26 @@ public final class DualHorse extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (ArmorStand as : hm.values()) {
-            as.remove();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+
+            if (player.getVehicle() == null) {
+                continue;
+            }
+
+            if (!horseArmorStandLink.containsValue(player.getVehicle().getUniqueId())) {
+                continue;
+            }
+
+            player.getVehicle().remove();
         }
 
         getLogger().info("Safely disabled DualHorses plugin.");
     }
 
-    // Careful: potential cause for memory leak. See when can be emptied/restrict growth
-    // Also, wtf are these variable names
-    public HashMap<Horse, ArmorStand> hm = new HashMap<Horse, ArmorStand>();
-    public Set<Horse> kh = new HashSet<Horse>();
-
+    // Main hashmap
     private HashMap<UUID, UUID> horseArmorStandLink = new HashMap<UUID, UUID>();
 
-    //Constants
+    // Constants
     public double HorseHeight = 0.45;
     private double Amplifier = 0.5;
 
@@ -69,12 +74,7 @@ public final class DualHorse extends JavaPlugin {
     }
 
     public boolean IsKnownArmorstand(UUID armorstandUUID) {
-        for (HashMap.Entry<UUID, UUID> entry : horseArmorStandLink.entrySet()) {
-            if (entry.getValue().equals(armorstandUUID)) {
-                return true;
-            }
-        }
-        return false;
+        return horseArmorStandLink.containsValue(armorstandUUID);
     }
 
     public UUID GetKnownArmorstandFromHorseUUID(UUID horseUUID) {
@@ -113,10 +113,6 @@ public final class DualHorse extends JavaPlugin {
         }
 
         GetArmorstand(location, armorstandUUID).remove();
-        // TODO: Is this needed?
-        // for(Entity ent : armorStand.getPassengers()) {
-        //     armorStand.removePassenger(ent);
-        // }
     }
 
     public ArmorStand GetArmorstand(Location location, UUID armorstandUUID) {
