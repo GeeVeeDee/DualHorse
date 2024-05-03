@@ -3,6 +3,7 @@ package geeveedee.dualhorse.HorseDismount;
 import geeveedee.dualhorse.DualHorse;
 import geeveedee.dualhorse.Enums.UUIDEnumerator;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,15 +23,11 @@ public class PlayerDismountHandler implements Listener {
             return;
         }
 
-        if (!(e.getVehicle() instanceof Horse)) {
+        if (!main.looksLikeAHorse(e.getVehicle())) {
             return;
         }
 
-        Horse horse = (Horse) e.getVehicle();
-
-        if(!horse.isTamed()) {
-            return;
-        }
+        Entity horse = e.getVehicle();
 
         if (!main.IsKnownHorse(horse.getUniqueId())) {
             return;

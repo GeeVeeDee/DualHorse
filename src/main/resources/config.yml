@@ -1,2 +1,7 @@
 ## Block two player riding when horse armor is equiped (Default: false)
 block-when-horse-has-armor: false
+
+## Enable two player riding on the following animals (Default: true)
+enable-two-player-horse: true
+enable-two-player-donkey: true
+enable-two-player-mule: true

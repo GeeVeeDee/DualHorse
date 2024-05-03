@@ -31,9 +31,9 @@ public class PlayerDamageHandler implements Listener {
         Player armorPlayer;
 
         // Get player on horse
-        if (e.getEntity().getVehicle() instanceof Horse) {
+        if (main.looksLikeAHorse(e.getEntity().getVehicle())) {
             horsePlayer = (Player) e.getEntity();
-        } else if (e.getDamager().getVehicle() instanceof Horse) {
+        } else if (main.looksLikeAHorse(e.getDamager().getVehicle())) {
             horsePlayer = (Player) e.getDamager();
         } else {
             return;
@@ -48,7 +48,7 @@ public class PlayerDamageHandler implements Listener {
             return;
         }
 
-        Horse horse = (Horse) horsePlayer.getVehicle();
+        Entity horse = horsePlayer.getVehicle();
 
         if (!main.IsKnownHorse(horse.getUniqueId())) {
             return;

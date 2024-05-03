@@ -4,6 +4,7 @@ import geeveedee.dualhorse.DualHorse;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 
 import org.bukkit.event.EventHandler;
@@ -27,18 +28,18 @@ public class HorseMoveHandler implements Listener {
             return;
         }
 
-        if (!(e.getPlayer().getVehicle() instanceof Horse)) {
+        if (!main.looksLikeAHorse(e.getPlayer().getVehicle())) {
             return;
         }
 
-        Horse horse = (Horse) e.getPlayer().getVehicle();
+        Entity horse = e.getPlayer().getVehicle();
 
         if (!main.IsKnownHorse(horse.getUniqueId())) {
             return;
         }
 
         ArmorStand armorStand = main.GetArmorstand(horse.getLocation(), main.GetKnownArmorstandFromHorseUUID(horse.getUniqueId()));
-        armorStand.teleport(horse.getLocation().add(main.getOffSetX(horse), main.HorseHeight, main.getOffSetZ(horse)));
+        armorStand.teleport(horse.getLocation().add(main.getOffSetX(horse), main.GetArmorstandHeight(e.getPlayer().getVehicle()), main.getOffSetZ(horse)));
 
         Method[] methods = ((Supplier<Method[]>) () -> {
             try {
@@ -53,7 +54,7 @@ public class HorseMoveHandler implements Listener {
             }
         }).get();
 
-        Location loc = horse.getLocation().add(main.getOffSetX(horse), main.HorseHeight, main.getOffSetZ(horse));
+        Location loc = horse.getLocation().add(main.getOffSetX(horse), main.GetArmorstandHeight(e.getPlayer().getVehicle()), main.getOffSetZ(horse));
 
         try {
             methods[1].invoke(methods[0].invoke(armorStand), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
