@@ -1,10 +1,7 @@
 package geeveedee.dualhorse.HorseMount;
 
 import geeveedee.dualhorse.DualHorse;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -19,7 +16,8 @@ public class HorseRightClickHandler implements Listener {
 
     @EventHandler
     public void onHorseRightClick(PlayerInteractEntityEvent e) {
-        if(!(e.getRightClicked() instanceof Horse)) {
+
+        if(!main.looksLikeAHorse(e.getRightClicked())) {
             return;
         }
 
@@ -27,7 +25,7 @@ public class HorseRightClickHandler implements Listener {
             return;
         }
 
-        Horse horse = (Horse) e.getRightClicked();
+        Entity horse = e.getRightClicked();
 
         if (horse.getPassengers().isEmpty()) {
             return;
@@ -37,23 +35,26 @@ public class HorseRightClickHandler implements Listener {
             return;
         }
 
-        if(horse.getInventory().getArmor() != null && main.getConfig().getBoolean("block-when-horse-has-armor")) {
-            return;
+        // Only check horse inventory as only they can have armor
+        if (e.getRightClicked() instanceof Horse) {
+            Horse rightClickedHorse = (Horse) e.getRightClicked();
+            if(rightClickedHorse.getInventory().getArmor() != null && main.getConfig().getBoolean("block-when-horse-has-armor")) {
+                return;
+            }
         }
 
         Player player = (Player) e.getPlayer();
         ArmorStand armorStand = (ArmorStand) player.getWorld().spawnEntity(
                 horse.getLocation().add(
                         main.getOffSetX(horse),
-                        main.HorseHeight,
+                        main.GetArmorstandHeight(e.getRightClicked()),
                         main.getOffSetZ(horse)
                 ),
                 EntityType.ARMOR_STAND
         );
         armorStand.setGravity(false);
         armorStand.setSmall(true);
-        // TODO: put to false after development
-        armorStand.setVisible(true);
+        armorStand.setVisible(false);
         armorStand.addPassenger(player);
 
         main.AddKnownHorse(horse.getUniqueId(), armorStand.getUniqueId());

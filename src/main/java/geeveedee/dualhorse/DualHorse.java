@@ -15,10 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class DualHorse extends JavaPlugin {
@@ -64,8 +62,7 @@ public final class DualHorse extends JavaPlugin {
     // Main hashmap
     private HashMap<UUID, UUID> horseArmorStandLink = new HashMap<UUID, UUID>();
 
-    // Constants
-    public double HorseHeight = 0.45;
+    // Constant
     private double Amplifier = 0.5;
 
     public boolean IsKnownHorse(UUID horseUUID)
@@ -129,65 +126,48 @@ public final class DualHorse extends JavaPlugin {
         return null;
     }
 
-	/*
-	//Returns horse if horse is ridden
-	public Horse isMounted(Horse h) {
-		for (Horse kh : rh) {
-			if (kh.getUniqueId().equals(h.getUniqueId())) {
-				return kh;
-			}
-		}
-		return null;
-	}
-
-	//Returns horse if horse is double mounted
-	public Horse isDoubleMounted(Horse h) {
-		for (Horse kh : dm) {
-			if (kh.getUniqueId().equals(h.getUniqueId())) {
-				return kh;
-			}
-		}
-		return null;
-	}
-
-    //Returns horse AS linked to horse if horse is known
-    public ArmorStand knownHorse(Horse h) {
-        for (Horse kh : hm.keySet()) {
-            if (kh.getUniqueId().equals(h.getUniqueId())) {
-                return getEntityByUniqueId(hm.get(kh));
-            }
+    public boolean looksLikeAHorse(Entity entity) {
+        if (entity instanceof Horse && this.getConfig().getBoolean("enable-two-player-horse")) {
+            return true;
         }
-        return null;
+
+        if (entity instanceof Donkey && this.getConfig().getBoolean("enable-two-player-donkey")) {
+            return true;
+        }
+
+        if (entity instanceof Mule && this.getConfig().getBoolean("enable-two-player-mule")) {
+            return true;
+        }
+
+        return false;
     }
 
-    //Returns armorstand in the world with the same UUID
-    public ArmorStand getEntityByUniqueId(ArmorStand as){
-        for (World world : Bukkit.getWorlds()) {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                for (Entity entity : chunk.getEntities()) {
-                    if (entity.getUniqueId().equals(as.getUniqueId()))
-                        return (ArmorStand) entity;
-                }
-            }
+    public double GetArmorstandHeight(Entity entity) {
+
+        if (entity instanceof Mule) {
+            return 0.20;
         }
 
-        return null;
-    } */
+        if (entity instanceof Donkey) {
+            return 0.10;
+        }
 
-    //Transfer degrees to radian
+        return 0.45;
+    }
+
     public double inRadians (float degrees) {
         return degrees * Math.PI / 180;
     }
 
     //Calculates X coords to be added
-    public double getOffSetX(Horse h) {
-        float pitch = h.getLocation().getYaw() + 90;
+    public double getOffSetX(Entity horse) {
+        float pitch = horse.getLocation().getYaw() + 90;
         return (double) Amplifier * -Math.cos(inRadians(pitch));
     }
 
     //Calculates Z coords to be added
-    public double getOffSetZ(Horse h) {
-        float pitch = h.getLocation().getYaw() + 90;
+    public double getOffSetZ(Entity horse) {
+        float pitch = horse.getLocation().getYaw() + 90;
         return (double) Amplifier * -Math.sin(inRadians(pitch));
     }
 }

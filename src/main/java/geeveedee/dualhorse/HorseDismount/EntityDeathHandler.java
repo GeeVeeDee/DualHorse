@@ -3,6 +3,7 @@ package geeveedee.dualhorse.HorseDismount;
 import geeveedee.dualhorse.DualHorse;
 import geeveedee.dualhorse.Enums.UUIDEnumerator;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,7 +20,7 @@ public class EntityDeathHandler implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent e) {
-        if(e.getEntity() instanceof Horse) {
+        if(main.looksLikeAHorse(e.getEntity())) {
             horseDies(e);
         } else if (e.getEntity() instanceof Player) {
             playerDies(e);
@@ -27,7 +28,7 @@ public class EntityDeathHandler implements Listener {
     }
 
     private void horseDies(EntityDeathEvent e) {
-        Horse horse = (Horse) e.getEntity();
+        Entity horse = e.getEntity();
 
         if (!main.IsKnownHorse(horse.getUniqueId())) {
             return;
@@ -43,12 +44,8 @@ public class EntityDeathHandler implements Listener {
             return;
         }
 
-        if (player.getVehicle() instanceof Horse) {
-            Horse horse = (Horse) player.getVehicle();
-
-            if(!horse.isTamed()) {
-                return;
-            }
+        if (main.looksLikeAHorse(player.getVehicle())) {
+            Entity horse = player.getVehicle();
 
             if (!main.IsKnownHorse(horse.getUniqueId())) {
                 return;
