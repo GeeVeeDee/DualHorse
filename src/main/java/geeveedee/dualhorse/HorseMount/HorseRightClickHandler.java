@@ -27,6 +27,11 @@ public class HorseRightClickHandler implements Listener {
 
         Entity horse = e.getRightClicked();
 
+        Tameable tameable = (Tameable) horse;
+        if (!tameable.isTamed()) {
+            return;
+        }
+
         if (horse.getPassengers().isEmpty()) {
             return;
         }
