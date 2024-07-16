@@ -1,6 +1,6 @@
 name: DualHorse
 version: '${project.version}'
 main: geeveedee.dualhorse.DualHorse
-api-version: '1.20'
+api-version: '1.21'
 authors: [ GeeVeeDee ]
 description: Lets two people ride a horse at once!
