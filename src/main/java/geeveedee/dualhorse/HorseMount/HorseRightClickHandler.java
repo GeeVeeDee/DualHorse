@@ -57,6 +57,7 @@ public class HorseRightClickHandler implements Listener {
                 ),
                 EntityType.ARMOR_STAND
         );
+
         armorStand.setGravity(false);
         armorStand.setSmall(true);
         armorStand.setVisible(false);

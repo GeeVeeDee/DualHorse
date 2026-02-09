@@ -139,6 +139,14 @@ public final class DualHorse extends JavaPlugin {
             return true;
         }
 
+        if (entity instanceof SkeletonHorse && this.getConfig().getBoolean("enable-two-player-skeleton-horse")) {
+            return true;
+        }
+
+        if (entity instanceof ZombieHorse && this.getConfig().getBoolean("enable-two-player-zombie-horse")) {
+            return true;
+        }
+
         return false;
     }
 

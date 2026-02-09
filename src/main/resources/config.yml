@@ -5,3 +5,5 @@ block-when-horse-has-armor: false
 enable-two-player-horse: true
 enable-two-player-donkey: true
 enable-two-player-mule: true
+enable-two-player-skeleton-horse: true
+enable-two-player-zombie-horse: true
