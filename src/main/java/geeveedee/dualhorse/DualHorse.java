@@ -113,11 +113,14 @@ public final class DualHorse extends JavaPlugin {
     }
 
     public ArmorStand GetArmorstand(Location location, UUID armorstandUUID) {
+        //getLogger().info("looking for: " + armorstandUUID + " around X: " + location.getBlockX() + " Y: " + location.getBlockY() + "Z: " + location.getBlockZ());
 
         World world = location.getWorld();
         location.add(0, 1, 0);
 
         for (Entity entity : world.getNearbyEntities(location, 4, 2, 4)) {
+            //getLogger().info("uuid: " + entity.getUniqueId().toString());
+            //getLogger().info("type: " + entity.getType());
             if (entity.getUniqueId().equals(armorstandUUID)) {
                 return (ArmorStand) entity;
             }
