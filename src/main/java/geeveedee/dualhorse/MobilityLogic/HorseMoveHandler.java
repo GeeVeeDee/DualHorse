@@ -43,64 +43,45 @@ public class HorseMoveHandler implements Listener {
         }
 
         ArmorStand armorStand = main.GetArmorstand(horse.getLocation(), main.GetKnownArmorstandFromHorseUUID(horse.getUniqueId()));
-        //main.getLogger().info(armorStand.toString());
+        armorStand.teleport(horse.getLocation().add(main.getOffSetX(horse), main.GetArmorstandHeight(e.getPlayer().getVehicle()), main.getOffSetZ(horse)));
+
+        Method[] methods = ((Supplier<Method[]>) () -> {
+            try {
+                Method getHandle = Class.forName("org.bukkit.craftbukkit.entity.CraftEntity")
+                        .getDeclaredMethod("getHandle");
+                getHandle.setAccessible(true);
+
+                Method snapToMethod = null;
+                Class<?> clazz = getHandle.getReturnType();
+                while (clazz != null && snapToMethod == null) {
+                    try {
+                        // pre-1.18: "setPositionRotation"
+                        // post-1.18 (obfuscated): "b"
+                        // 26.1+ (unobfuscated): "snapTo"
+                        snapToMethod = clazz.getDeclaredMethod("snapTo", double.class, double.class, double.class, float.class, float.class);
+                    } catch (NoSuchMethodException ex) {
+                        clazz = clazz.getSuperclass();
+                    }
+                }
+
+                if (snapToMethod == null) return null;
+                snapToMethod.setAccessible(true);
+                return new Method[] { getHandle, snapToMethod };
+            } catch (Exception ex1) {
+                ex1.printStackTrace();
+                return null;
+            }
+        }).get();
 
         Location loc = horse.getLocation().add(
                 main.getOffSetX(horse),
                 main.GetArmorstandHeight(e.getPlayer().getVehicle()),
                 main.getOffSetZ(horse)
         );
-
-        Location target = horse.getLocation().add(
-                main.getOffSetX(horse),
-                main.GetArmorstandHeight(e.getPlayer().getVehicle()),
-                main.getOffSetZ(horse)
-        );
-
-
-// ...
-        Location target = ...; // your target location
-        entity.teleport(target, TeleportFlag.EntityState.RETAIN_PASSENGERS);
-
-        // Doesn't work
-        /*
-        Vector velocity = target.toVector().subtract(armorStand.getLocation().toVector());
-        velocity.multiply(0.5); // smoothing factor (0.3–0.7 works well)
-
-        Player player = (Player) armorStand.getPassengers().getFirst();
-        armorStand.eject();
-        armorStand.setVelocity(velocity);
-        armorStand.addPassenger(player);*/
-
-        // Jittery
-        /*
-        Player player = (Player) armorStand.getPassengers().getFirst();
-        armorStand.eject();
-        armorStand.teleport(loc, PlayerTeleportEvent.TeleportCause.PLUGIN);
-        armorStand.addPassenger(player);
-        */
-
-
-        /*armorStand.teleport(horse.getLocation().add(main.getOffSetX(horse), main.GetArmorstandHeight(e.getPlayer().getVehicle()), main.getOffSetZ(horse)));
-
-        Method[] methods = ((Supplier<Method[]>) () -> {
-            try {
-                Method getHandle = Class.forName(Bukkit.getServer().getClass().getPackage().getName() + ".entity.CraftEntity").getDeclaredMethod("getHandle");
-                return new Method[] {
-                        //pre-1.18: "setPositionRotation"
-                        //post-1.18: "b"
-                        getHandle, getHandle.getReturnType().getDeclaredMethod("b", double.class, double.class, double.class, float.class, float.class)
-                };
-            } catch (Exception ex1) {
-                return null;
-            }
-        }).get();
-
-        Location loc = horse.getLocation().add(main.getOffSetX(horse), main.GetArmorstandHeight(e.getPlayer().getVehicle()), main.getOffSetZ(horse));
-
         try {
             methods[1].invoke(methods[0].invoke(armorStand), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
         } catch (Exception ex2) {
-        }*/
+            ex2.printStackTrace();
+        }
     }
 }
